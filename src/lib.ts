@@ -14,6 +14,7 @@ import { downloadBlob, plateFilename, plateSVG, zipPlates } from "./export/plate
 import { NestClient } from "./nest/client";
 import type { Layout } from "./nest/types";
 import { toNestSettings, toWire } from "./nest/wire";
+import { SAMPLES } from "./samples";
 import { parseSVG } from "./svg/parse";
 import { DEFAULTS } from "./types";
 import type { Mode, Part, Settings } from "./types";
@@ -71,6 +72,9 @@ export interface NestResult {
   /** All plates zipped. */
   zip(): Promise<Blob>;
 }
+
+/** The sample parts the app opens with (name, source and the quantity it uses). */
+export const SAMPLE_PARTS: NestInput[] = SAMPLES.map(([name, qty, svg]) => ({ name, qty, svg }));
 
 let nextUid = 1;
 

@@ -12,45 +12,54 @@ test.describe("library example page", () => {
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto("/examples/");
     await done(page);
-    await expect(page.locator("#partsNote")).toContainText("3 sample parts × 4");
-    await expect(page.locator("#stats")).toContainText("12parts placed");
-    const imgs = page.locator(".plates img");
-    expect(await imgs.count()).toBeGreaterThan(0);
-    for (const ok of await imgs.evaluateAll((els) =>
-      els.map((e) => (e as HTMLImageElement).complete && (e as HTMLImageElement).naturalWidth > 0),
-    ))
+    await expect(page.locator("#partsNote")).toContainText("6 sample parts");
+    await expect(page.locator("#sampleBadge")).toBeVisible();
+    await expect(page.locator("#sParts")).toHaveText("32");
+    const cards = page.locator(".plate");
+    expect(await cards.count()).toBeGreaterThan(0);
+    await expect(cards.first().locator(".t")).toHaveText(/^Plate 1 of \d+$/);
+    expect(await cards.first().locator(".sheet polygon").count()).toBeGreaterThan(0); // dashed spacing envelopes
+    for (const ok of await page
+      .locator(".sheet img")
+      .evaluateAll((els) =>
+        els.map((e) => (e as HTMLImageElement).complete && (e as HTMLImageElement).naturalWidth > 0),
+      ))
       expect(ok).toBe(true);
+    // looks like the app: shared stylesheet and fonts are applied
+    expect(await page.locator("h1").evaluate((e) => getComputedStyle(e).fontFamily)).toContain("Barlow Semi Condensed");
     expect(errors).toEqual([]);
   });
 
   test("uses uploaded SVGs, bounding-box mode, and downloads", async ({ page }) => {
     await page.goto("/examples/");
     await done(page);
-    await page.setInputFiles("#files", fixtureFiles());
     await page.fill("#qty", "2");
-    await page.selectOption("#mode", "bbox");
-    await page.click("#run");
+    await page.click("#m-bbox");
     await done(page);
-    await expect(page.locator("#partsNote")).toContainText(`${fixtureFiles().length} file(s) × 2`);
-    await expect(page.locator("#stats")).toContainText(`${fixtureFiles().length * 2}parts placed`);
-    const [svg] = await Promise.all([page.waitForEvent("download"), page.locator(".plates button").first().click()]);
+    await page.setInputFiles("#files", fixtureFiles());
+    await expect(page.locator("#partsNote")).toContainText(`${fixtureFiles().length} files × 2`);
+    await done(page);
+    await expect(page.locator("#sParts")).toHaveText(String(fixtureFiles().length * 2));
+    await expect(page.locator("#sampleBadge")).toBeHidden();
+    const [svg] = await Promise.all([page.waitForEvent("download"), page.locator(".plate .hd button").first().click()]);
     expect(svg.suggestedFilename()).toMatch(/^plate-01-of-\d\d\.svg$/);
     expect(readFileSync((await svg.path())!, "utf8")).toContain('width="300mm"');
+    await page.click("#useSamples");
+    await done(page);
     const [zip] = await Promise.all([page.waitForEvent("download"), page.click("#zip")]);
     const files = Object.keys((await JSZip.loadAsync(readFileSync((await zip.path())!))).files);
-    expect(files.length).toBe(await page.locator(".plates figure").count());
+    expect(files.length).toBe(await page.locator(".plate").count());
   });
 
   test("Stop resolves with the best layout found so far", async ({ page }) => {
     await page.goto("/examples/");
     await done(page);
-    await page.fill("#qty", "12");
     await page.fill("#budget", "60");
     await page.click("#run");
     await expect(page.locator("#status")).toHaveText(/Searching/, { timeout: 30_000 });
     await page.click("#stop");
     await done(page);
-    expect(await page.locator(".plates img").count()).toBeGreaterThan(0);
+    expect(await page.locator(".plate").count()).toBeGreaterThan(0);
   });
 
   test("reports oversize parts and bad files without failing", async ({ page }) => {
@@ -66,9 +75,8 @@ test.describe("library example page", () => {
         ),
       },
     ]);
-    await page.click("#run");
     await done(page);
-    await expect(page.locator("#warnings")).toContainText("broken.svg isn't a readable SVG file.");
-    await expect(page.locator("#warnings")).toContainText("huge.svg doesn't fit");
+    await expect(page.locator("#msgs")).toContainText("broken.svg isn't a readable SVG file.");
+    await expect(page.locator("#msgs")).toContainText("huge.svg (900 × 10 mm) doesn't fit");
   });
 });

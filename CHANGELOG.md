@@ -31,3 +31,9 @@ Fixes found by the parity fixtures (deviations from the reference, both bugs the
   abortable, deterministic with `seed` + `maxIterations`.
 - Standalone example page `examples/index.html` (built to `dist/examples/`), with Playwright coverage.
 - `toWire`/`toNestSettings` moved to `src/nest/wire.ts` and shared by the app and the library.
+
+## 0.1.5
+
+- Example page restyled to match the reference apps: shared stylesheet and fonts (`src/ui/theme.ts`), plate & cutting
+  panel with the highlighted kerf field, drag-and-drop parts panel, stats summary, search bar, plate cards with dashed
+  spacing envelopes, margin line and fill bar, mode switch. Uses the reference sample set (`SAMPLE_PARTS` in `src/lib.ts`).

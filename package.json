@@ -1,6 +1,6 @@
 {
   "name": "plate-nester",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "type": "module",
   "description": "Client-side SVG nesting for laser cutting: true-shape and bounding-box packing onto plates.",

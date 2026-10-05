@@ -5,255 +5,128 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Library Example</title>
     <style>
-      :root {
-        --bg: #f4f6f8;
-        --surface: #fff;
-        --fg: #16202b;
-        --muted: #5a6775;
-        --line: #d3dae2;
-        --accent: #2d55f0;
-        --accent-fg: #fff;
-        --plate: #e8d6b3;
-        --warn: #a14a07;
-        font:
-          15px/1.5 system-ui,
-          -apple-system,
-          "Segoe UI",
-          sans-serif;
-        color-scheme: light;
-      }
-      @media (prefers-color-scheme: dark) {
-        :root:not([data-theme="light"]) {
-          --bg: #0e131a;
-          --surface: #151c25;
-          --fg: #e4e9ef;
-          --muted: #93a0ae;
-          --line: #27323f;
-          --accent: #7390ff;
-          --accent-fg: #0b1020;
-          --plate: #dcc8a2;
-          --warn: #f0a35c;
-          color-scheme: dark;
-        }
-      }
-      :root[data-theme="dark"] {
-        --bg: #0e131a;
-        --surface: #151c25;
-        --fg: #e4e9ef;
-        --muted: #93a0ae;
-        --line: #27323f;
-        --accent: #7390ff;
-        --accent-fg: #0b1020;
-        --plate: #dcc8a2;
-        --warn: #f0a35c;
-        color-scheme: dark;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--fg);
-        padding: 20px 16px 40px;
-      }
-      main {
-        max-width: 1100px;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-      }
-      h1 {
-        margin: 0;
-        font-size: 26px;
-      }
-      p {
-        margin: 0;
-        color: var(--muted);
-      }
-      section {
-        background: var(--surface);
+      /* Only what the shared stylesheet doesn't already cover. */
+      .code {
+        background: var(--sunk);
         border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 16px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        min-width: 0;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 10px;
-      }
-      label {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        font-size: 13px;
-        color: var(--muted);
-      }
-      input,
-      select {
-        font: inherit;
-        color: var(--fg);
-        background: var(--bg);
-        border: 1px solid var(--line);
-        border-radius: 6px;
-        padding: 6px 8px;
-        width: 100%;
-      }
-      .row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        align-items: center;
-      }
-      button {
-        font:
-          600 14px system-ui,
-          sans-serif;
-        border-radius: 6px;
-        padding: 7px 14px;
-        cursor: pointer;
-        border: 1px solid var(--line);
-        background: var(--surface);
-        color: var(--fg);
-      }
-      button.primary {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: var(--accent-fg);
-      }
-      button:disabled {
-        opacity: 0.5;
-        cursor: default;
-      }
-      #status {
-        font:
-          13px ui-monospace,
-          Menlo,
-          monospace;
-        color: var(--muted);
-      }
-      #stats {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px 24px;
-        font-variant-numeric: tabular-nums;
-      }
-      #stats b {
-        font-size: 20px;
-        display: block;
-      }
-      .plates {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 12px;
-      }
-      .plates figure {
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
-      .plates img {
-        width: 100%;
-        background: var(--plate);
-        border-radius: 3px;
-      }
-      figcaption {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 13px;
-        color: var(--muted);
-      }
-      .warn {
-        color: var(--warn);
-        font-size: 14px;
-      }
-      pre {
+        border-radius: 8px;
+        padding: 12px;
         margin: 0;
         overflow: auto;
-        background: var(--bg);
-        border: 1px solid var(--line);
-        border-radius: 6px;
-        padding: 12px;
-        font:
-          13px/1.45 ui-monospace,
-          Menlo,
-          monospace;
+        font: 13px/1.5 var(--f-mono);
+        color: var(--fg);
+      }
+      .search .btn {
+        flex: none;
       }
     </style>
   </head>
-  <body>
-    <main>
+  <body data-mode="shape">
+    <div class="wrap">
       <header>
-        <h1>Plate Nester: library example</h1>
+        <h1>Plate Nester · library example</h1>
         <p>
-          This page uses only the public API in <code>src/lib.ts</code>: no app UI. Everything runs in your browser.
+          This page drives the nesting engine through the public API in <code>src/lib.ts</code> only: no app code.
+          Everything runs in your browser; nothing is uploaded.
         </p>
+        <div class="modesw" role="group" aria-label="Nesting mode">
+          <button type="button" id="m-shape" aria-pressed="true">True shape</button
+          ><button type="button" id="m-bbox" aria-pressed="false">Bounding box</button>
+        </div>
       </header>
 
-      <section aria-labelledby="h-parts">
-        <h2 id="h-parts" style="margin: 0; font-size: 16px">1. Parts</h2>
-        <div class="row">
-          <label style="flex: 1; min-width: 220px"
-            >Your SVG files (optional; replaces the samples)
-            <input type="file" id="files" accept=".svg,image/svg+xml" multiple
-          /></label>
-          <label style="width: 120px">Copies of each<input type="number" id="qty" min="1" value="4" /></label>
-        </div>
-        <p id="partsNote"></p>
-      </section>
+      <div class="layout">
+        <div class="rail">
+          <section class="panel" aria-labelledby="h-plate">
+            <h2 id="h-plate">
+              Plate &amp; cutting <span class="note" style="text-transform: none; letter-spacing: 0">mm</span>
+            </h2>
+            <div class="row">
+              <div class="field">
+                <label for="plateW">Plate width</label><input type="number" id="plateW" value="300" min="1" step="1" />
+              </div>
+              <div class="field">
+                <label for="plateH">Plate height</label><input type="number" id="plateH" value="300" min="1" step="1" />
+              </div>
+            </div>
+            <div class="kerf">
+              <label for="kerf">Laser kerf</label>
+              <input type="number" id="kerf" value="0.1" min="0" step="0.01" />
+              <p class="hint">
+                Width of material the beam removes. Added to the spacing between parts so neighboring cuts never
+                overlap.
+              </p>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label for="gap">Extra gap</label><input type="number" id="gap" value="1" min="0" step="0.1" />
+              </div>
+              <div class="field">
+                <label for="margin">Edge margin</label><input type="number" id="margin" value="3" min="0" step="1" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="field" data-only="shape">
+                <label for="rotStep">Rotation</label>
+                <select id="rotStep">
+                  <option value="0">None</option>
+                  <option value="180">180° flips</option>
+                  <option value="90" selected>90° steps</option>
+                  <option value="45">45° steps</option>
+                  <option value="30">30° steps</option>
+                  <option value="15">15° steps</option>
+                </select>
+              </div>
+              <div class="field" data-only="shape">
+                <label for="budget">Search time (s)</label
+                ><input type="number" id="budget" value="3" min="0.5" step="0.5" />
+              </div>
+              <div class="field" data-only="bbox" style="justify-content: flex-end">
+                <label class="check"><input type="checkbox" id="rotate90" checked /> Allow 90° rotation</label>
+              </div>
+            </div>
+            <label class="check"><input type="checkbox" id="outline" /> Plate outline in export</label>
+          </section>
 
-      <section aria-labelledby="h-opts">
-        <h2 id="h-opts" style="margin: 0; font-size: 16px">2. Options (mm)</h2>
-        <div class="grid">
-          <label
-            >Mode<select id="mode">
-              <option value="shape">True shape</option>
-              <option value="bbox">Bounding box</option>
-            </select></label
-          >
-          <label>Plate width<input type="number" id="plateW" value="300" min="1" /></label>
-          <label>Plate height<input type="number" id="plateH" value="300" min="1" /></label>
-          <label>Kerf<input type="number" id="kerf" value="0.1" step="0.01" min="0" /></label>
-          <label>Extra gap<input type="number" id="gap" value="1" step="0.1" min="0" /></label>
-          <label>Edge margin<input type="number" id="margin" value="3" min="0" /></label>
-          <label
-            >Rotation<select id="rotStep">
-              <option value="0">None</option>
-              <option value="180">180°</option>
-              <option value="90" selected>90°</option>
-              <option value="45">45°</option>
-              <option value="15">15°</option>
-            </select></label
-          >
-          <label>Search time (s)<input type="number" id="budget" value="3" min="0.5" step="0.5" /></label>
+          <section class="panel" aria-labelledby="h-parts">
+            <h2 id="h-parts">Parts <span id="sampleBadge" class="badge">Sample parts</span></h2>
+            <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add SVG files">
+              Drop SVG files here or <b>browse</b>
+            </div>
+            <input type="file" id="files" accept=".svg,image/svg+xml" multiple hidden />
+            <div class="row">
+              <div class="field">
+                <label for="qty">Copies of each upload</label
+                ><input type="number" id="qty" value="4" min="1" step="1" />
+              </div>
+              <div class="field" style="justify-content: flex-end">
+                <button type="button" class="btn small" id="useSamples">Use sample parts</button>
+              </div>
+            </div>
+            <p class="note" id="partsNote" style="margin: 0"></p>
+          </section>
         </div>
-        <div class="row">
-          <button class="primary" id="run">Nest</button>
-          <button id="stop" disabled>Stop</button>
-          <span id="status" data-state="idle">Ready.</span>
-        </div>
-      </section>
 
-      <section aria-labelledby="h-out">
-        <div class="row" style="justify-content: space-between">
-          <h2 id="h-out" style="margin: 0; font-size: 16px">3. Result</h2>
-          <button id="zip" disabled>Download all (.zip)</button>
-        </div>
-        <div id="stats"></div>
-        <div id="warnings"></div>
-        <div class="plates" id="plates"></div>
-      </section>
+        <div class="results">
+          <div class="summary">
+            <div class="stat"><span class="v" id="sPlates">–</span><span class="k">Plates</span></div>
+            <div class="stat"><span class="v" id="sMin">–</span><span class="k">Area minimum</span></div>
+            <div class="stat"><span class="v" id="sFill">–</span><span class="k">Average fill</span></div>
+            <div class="stat"><span class="v" id="sParts">–</span><span class="k">Parts placed</span></div>
+            <div class="sp"></div>
+            <button type="button" class="btn primary" id="zip" hidden>Download all (.zip)</button>
+          </div>
+          <div class="search">
+            <span class="st" id="status" data-state="idle"><span class="dot"></span>Ready.</span>
+            <button type="button" class="btn small primary" id="run">Nest</button>
+            <button type="button" class="btn small" id="stop" hidden>Stop</button>
+          </div>
+          <div class="msgs" id="msgs"></div>
+          <div class="plates" id="plates"></div>
 
-      <section aria-labelledby="h-code">
-        <h2 id="h-code" style="margin: 0; font-size: 16px">The code behind this page</h2>
-        <pre><code>import { nest, downloadBlob, plateFilename } from "../src/lib";
+          <section class="panel" aria-labelledby="h-code">
+            <h2 id="h-code">The code behind this page</h2>
+            <pre class="code"><code>import { nest, downloadBlob, plateFilename } from "../src/lib";
 
 const ctrl = new AbortController();
 const result = await nest(
@@ -266,8 +139,11 @@ const result = await nest(
 );
 result.plates().forEach((svg, i) =>
   downloadBlob(new Blob([svg], { type: "image/svg+xml" }), plateFilename(i, result.stats.plates)));</code></pre>
-      </section>
-    </main>
+          </section>
+        </div>
+      </div>
+    </div>
+    <div class="toast" id="toast" hidden></div>
     <script type="module" src="./main.ts"></script>
   </body>
 </html>
