@@ -230,6 +230,13 @@ export const lineToD = (x1: number, y1: number, x2: number, y2: number): string 
 export const polyToD = (pts: { x: number; y: number }[], close: boolean): string =>
   "M" + pts.map((q) => `${q.x} ${q.y}`).join("L") + (close ? "Z" : "");
 
+/** True when the element or any ancestor below `root` has display:none. */
+export function isHidden(el: Element, root: Element): boolean {
+  for (let a: Element | null = el; a && a !== root; a = a.parentElement)
+    if (getComputedStyle(a).display === "none") return true;
+  return false;
+}
+
 const FLAT_SHAPES = new Set(["path", "rect", "circle", "ellipse", "line", "polyline", "polygon"]);
 const FLAT_SKIP = new Set([
   "g",
@@ -283,13 +290,7 @@ export function extractFlat(g: SVGGElement, host: SVGSVGElement): FlatItem[] | n
       return null;
     if (FLAT_SKIP.has(tag)) continue;
     if (!FLAT_SHAPES.has(tag)) return null; // text, images, <use>: keep original markup
-    let hidden = false;
-    for (let a: Element | null = el; a && a !== g; a = a.parentElement)
-      if (getComputedStyle(a).display === "none") {
-        hidden = true;
-        break;
-      }
-    if (hidden) continue;
+    if (isHidden(el, g)) continue;
     const fill = cssColor(cs.fill),
       stroke = cssColor(cs.stroke);
     if (fill === undefined || stroke === undefined) return null;

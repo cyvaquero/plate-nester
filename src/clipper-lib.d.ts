@@ -22,6 +22,7 @@ declare module "clipper-lib" {
       };
       Area(p: Path): number;
       Orientation(p: Path): boolean;
+      PointInPolygon(pt: IntPoint, path: Path): number;
     };
     ClipperOffset: new (
       miterLimit?: number,

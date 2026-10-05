@@ -1,5 +1,6 @@
 import type { Path } from "clipper-lib";
 import type { Ring } from "../types";
+import { isHidden } from "../svg/flatten";
 import { CL, SC, area } from "./clip";
 
 const SHAPES = "path,rect,circle,ellipse,polygon,polyline,line,text,use,image";
@@ -14,6 +15,7 @@ export function sampleRings(g: SVGGElement, host: SVGSVGElement, stepU: number):
   const rings: Ring[] = [];
   for (const el of g.querySelectorAll(SHAPES)) {
     if (el.closest("defs,clipPath,mask,symbol,pattern,marker")) continue;
+    if (isHidden(el, g)) continue; // hidden shapes are neither measured nor exported, so must not shape the outline
     const scr = (el as SVGGraphicsElement).getScreenCTM();
     if (!scr) continue;
     const m = hostInv.multiply(scr);
