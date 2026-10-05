@@ -1,43 +1,32 @@
 # Plate Nester
 
-Client-side nesting of SVG parts onto laser-cutter plates. One app, two modes:
+Nest SVG parts onto laser-cutter plates, in one HTML file. Open
+[`plate-nester.html`](plate-nester.html) in a browser (double-click is fine): no install, no build, no server.
+Everything runs in the page; nothing is uploaded.
+
+Two modes:
 
 - **True shape** (default): parts interlock by their real outlines and can rotate (none / 180 / 90 / 45 / 30 / 15°).
-  Envelopes → no-fit polygons → first-fit on multiple plates, improved by a seeded, cancellable order search.
+  Spacing envelopes → no-fit polygons → first-fit on multiple plates, improved by a seeded order search
+  ("Search 30 s more", Stop).
 - **Bounding box**: MaxRects packing (4 heuristics × 5 sort orders) with optional 90° rotation.
 
-Everything runs in the browser — no server, no uploads. Nesting runs in a Web Worker; SVG parsing and geometry
-sampling need the DOM and run on the main thread.
+Exports one SVG per plate (sizes in mm, one object per part, unique ids) or a zip of all plates. The export format
+was verified in WeCreat MakeIT 3.06 (macOS) for the WeCreat Vision Pro 45W and must not change.
 
-Exports one SVG per plate (mm units, one object per part, ids unique) and a zip of all plates. The export format was
-verified against WeCreat MakeIT 3.06 (macOS) for the WeCreat Vision Pro 45W and must not change.
+## Files
 
-## Develop
+| Path                 | What                                                                          |
+| -------------------- | ----------------------------------------------------------------------------- |
+| `plate-nester.html`  | the app: HTML, CSS and inline JavaScript in one file                          |
+| `reference/`         | the original single-file apps (true shape, bounding box), source of truth     |
+| `fixtures/`          | SVGs for manual testing: transforms, skew, CSS classes, hidden groups, text, arcs, gradient |
 
-```bash
-npm install
-npm run dev          # http://localhost:5173
-npm run build        # static site in dist/
-npm test             # Vitest unit tests
-npm run test:e2e     # Playwright (first time: npx playwright install chromium)
-npm run lint && npm run typecheck
-```
-
-## Layout
-
-| Path                  | Purpose                                                                   |
-| --------------------- | ------------------------------------------------------------------------- |
-| `src/units.ts`        | mm/in conversion; all internal lengths are mm                             |
-| `src/svg/parse.ts`    | DOMParser, sanitizing, id prefixing, physical scale, bbox                 |
-| `src/svg/flatten.ts`  | path-d parser, shape→path, CTM baking, computed style                     |
-| `src/geometry/`       | outline sampling + union, envelope (RDP, offset, hull, convex split), NFP |
-| `src/nest/`           | shape placement, MaxRects, search, engine + worker + client               |
-| `src/export/plate.ts` | per-plate SVG, zip, download                                              |
-| `src/ui/`             | vanilla-DOM controls, parts list, plate previews                          |
-| `reference/`          | the original single-file apps — source of truth for behaviour             |
+Like the reference apps, the page loads two libraries by script tag: `clipper-lib@6.4.2` (polygon clipping) and
+`jszip` (zip download), plus Google Fonts. It needs network access for those on first load.
 
 ## Workflow
 
-git-flow: `main` + `develop`, feature branches off `develop`, PRs into `develop`.
-Versions are `major.minor.iterative`: major and minor are bumped only on request (zeroing what follows); the
-iterative number is bumped with every change. See [CHANGELOG.md](CHANGELOG.md).
+git-flow: `main` + `develop`, feature branches off `develop`, PRs into `develop`. Versions are
+`major.minor.iterative`, shown in the page footer and in [CHANGELOG.md](CHANGELOG.md): major and minor are bumped only
+on request; the iterative number is bumped with every change.
