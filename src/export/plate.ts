@@ -35,6 +35,31 @@ export const slug = (s: string): string =>
       .replace(/^-+|-+$/g, "") || "part"
   ).replace(/^(\d)/, "p$1");
 
+const reEsc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/**
+ * Give every id inside original markup an instance-specific prefix and rewrite the references to it (url(#id),
+ * href="#id", and #id selectors inside <style>), so a part placed several times on one plate never repeats an id.
+ */
+export function uniquifyIds(markup: string, prefix: string): string {
+  const ids = [...markup.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
+  if (!ids.length) return markup;
+  let out = markup;
+  for (const id of new Set(ids)) {
+    const e = reEsc(id),
+      n = prefix + id;
+    out = out
+      .replace(new RegExp(`(\\sid=")${e}(")`, "g"), `$1${n}$2`)
+      .replace(new RegExp(`url\\(\\s*(['"]?)#${e}\\1\\s*\\)`, "g"), `url(#${n})`)
+      .replace(new RegExp(`(href\\s*=\\s*["'])#${e}(["'])`, "g"), `$1#${n}$2`)
+      .replace(
+        /(<style[^>]*>)([\s\S]*?)(<\/style>)/g,
+        (_m, a: string, css: string, z: string) => a + css.replace(new RegExp(`#${e}(?![\\w-])`, "g"), `#${n}`) + z,
+      );
+  }
+  return out;
+}
+
 /**
  * One object per part. A single <path> when all its shapes are unfilled lines with the same stroke; otherwise a
  * <g> of transform-free paths. Falls back to <g transform="…"> around the original markup when `flat` is null.
@@ -45,7 +70,8 @@ export function partMarkup(
   id: string,
   fallbackTransform: string,
 ): string {
-  if (!p.flat) return `<g id="${id}" transform="${fallbackTransform}"><g ${p.rootAttrs}>${p.inner}</g></g>`;
+  if (!p.flat)
+    return `<g id="${id}" transform="${fallbackTransform}"><g ${p.rootAttrs}>${uniquifyIds(p.inner, id + "_")}</g></g>`;
   const [a, b, c, d, e, f] = M;
   const sc = Math.sqrt(Math.abs(a * d - b * c));
   const toD = (segs: FlatItem["segs"]) =>

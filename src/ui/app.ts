@@ -126,6 +126,7 @@ export function startApp(): void {
   function schedule(delay: number, rerender: boolean): void {
     clearTimeout(timer);
     client.stop();
+    setStatus("Nesting…", true);
     timer = setTimeout(() => {
       if (rerender) drawParts();
       startRun(SEARCH_MS);
