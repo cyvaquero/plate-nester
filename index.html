@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Plate Nester</title>
+  </head>
+  <body data-mode="shape">
+    <div class="wrap">
+      <header>
+        <h1>Plate Nester</h1>
+        <p>
+          Pack SVG parts onto laser plates. <b>True shape</b> interlocks parts by their actual outlines and rotates them
+          so stars, brackets and crescents tuck into each other's gaps; <b>Bounding box</b> packs rectangles fast.
+          Everything runs in your browser; nothing is uploaded.
+        </p>
+        <div class="modesw" role="group" aria-label="Nesting mode">
+          <button type="button" id="m-shape" aria-pressed="true">True shape</button
+          ><button type="button" id="m-bbox" aria-pressed="false">Bounding box</button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <div class="rail">
+          <section class="panel" aria-labelledby="h-plate">
+            <h2 id="h-plate">
+              Plate &amp; cutting
+              <span class="unitsw" role="group" aria-label="Units">
+                <button type="button" id="u-mm" aria-pressed="true">mm</button
+                ><button type="button" id="u-in" aria-pressed="false">in</button></span
+              >
+            </h2>
+            <div class="row">
+              <div class="field">
+                <label for="plateW">Plate width (<span class="u">mm</span>)</label
+                ><input type="number" id="plateW" min="1" step="any" />
+              </div>
+              <div class="field">
+                <label for="plateH">Plate height (<span class="u">mm</span>)</label
+                ><input type="number" id="plateH" min="1" step="any" />
+              </div>
+            </div>
+            <div class="kerf">
+              <label for="kerf">Laser kerf (<span class="u">mm</span>)</label>
+              <input type="number" id="kerf" min="0" step="any" placeholder="e.g. 0.10" />
+              <p class="hint">
+                Width of material the beam removes. Added to the spacing between parts so neighboring cuts never
+                overlap.
+              </p>
+              <details>
+                <summary>Measure it from a test cut</summary>
+                <p class="hint" style="margin-top: 6px">Cut a square, then measure the piece that drops out.</p>
+                <div class="row">
+                  <div class="field">
+                    <label for="kDesign">Designed (<span class="u">mm</span>)</label
+                    ><input type="number" id="kDesign" step="any" />
+                  </div>
+                  <div class="field">
+                    <label for="kMeasured">Measured (<span class="u">mm</span>)</label
+                    ><input type="number" id="kMeasured" step="any" />
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px">
+                  <span class="note" id="kOut">Kerf: –</span
+                  ><button type="button" class="btn small" id="kUse" disabled>Use this</button>
+                </div>
+              </details>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label for="gap">Extra gap (<span class="u">mm</span>)</label
+                ><input type="number" id="gap" min="0" step="any" />
+              </div>
+              <div class="field">
+                <label for="margin">Edge margin (<span class="u">mm</span>)</label
+                ><input type="number" id="margin" min="0" step="any" />
+              </div>
+            </div>
+            <div class="row" data-only="shape">
+              <div class="field">
+                <label for="rotStep">Rotation</label>
+                <select id="rotStep">
+                  <option value="0">None</option>
+                  <option value="180">180° flips</option>
+                  <option value="90">90° steps</option>
+                  <option value="45">45° steps</option>
+                  <option value="30">30° steps</option>
+                  <option value="15">15° steps</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="prec">Outline precision</label>
+                <select id="prec">
+                  <option value="0.25">Standard (±0.25 mm)</option>
+                  <option value="0.1">Fine (±0.1 mm)</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label for="dpi">Unitless SVG scale</label>
+                <select id="dpi">
+                  <option value="96">96 px/in (Inkscape)</option>
+                  <option value="72">72 px/in (Illustrator)</option>
+                  <option value="90">90 px/in (old Inkscape)</option>
+                </select>
+              </div>
+              <div class="field" style="justify-content: flex-end; gap: 8px">
+                <label class="check" data-only="bbox"><input type="checkbox" id="rotate90" /> Allow 90° rotation</label>
+                <label class="check"><input type="checkbox" id="outline" /> Plate outline in export</label>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="h-parts">
+            <h2 id="h-parts">Parts <span id="sampleBadge" class="badge">Sample parts</span></h2>
+            <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add SVG files">
+              Drop SVG files here or <b>browse</b>
+            </div>
+            <input type="file" id="file" accept=".svg,image/svg+xml" multiple hidden />
+            <div class="parts" id="parts"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+              <span class="note" id="partCount"></span>
+              <button type="button" class="btn small" id="clear">Remove all</button>
+            </div>
+          </section>
+        </div>
+
+        <div class="results">
+          <div class="summary">
+            <div class="stat"><span class="v" id="sPlates">–</span><span class="k">Plates</span></div>
+            <div class="stat"><span class="v" id="sMin">–</span><span class="k">Area minimum</span></div>
+            <div class="stat"><span class="v" id="sFill">–</span><span class="k">Average fill</span></div>
+            <div class="stat"><span class="v" id="sParts">–</span><span class="k">Parts placed</span></div>
+            <div class="sp"></div>
+            <button type="button" class="btn primary" id="dlAll" hidden>Download all (.zip)</button>
+          </div>
+          <div class="search" id="searchBar" data-only="shape">
+            <span class="st" id="status" data-state="running"><span class="dot on"></span>Nesting…</span>
+            <button type="button" class="btn small" id="more">Search 30 s more</button>
+            <button type="button" class="btn small" id="stop" hidden>Stop</button>
+          </div>
+          <div class="msgs" id="msgs"></div>
+          <div class="plates" id="plates"></div>
+        </div>
+      </div>
+      <footer><span>All processing stays in your browser.</span><span id="version"></span></footer>
+    </div>
+    <div class="toast" id="toast" hidden></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
