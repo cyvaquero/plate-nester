@@ -34,3 +34,8 @@ Fixes found by the parity fixtures (deviations from the reference, both bugs the
   placed more than once get per-instance ids.
 - Removed the TypeScript/Vite/npm project (`src/`, `tests/`, configs, `package.json`). Test SVGs moved to `fixtures/`.
   0.1.4–0.1.6 (library API, example page, standalone build) lived only in the closed PR #20.
+
+## 0.1.8
+
+- Fix garbled characters (`Â·`, `Â°`, `Ã—`, `â€¦`) when the page is opened from disk: declare UTF-8 (`<meta charset>`),
+  plus doctype, `lang` and viewport (#23).
