@@ -37,3 +37,13 @@ Fixes found by the parity fixtures (deviations from the reference, both bugs the
 - Example page restyled to match the reference apps: shared stylesheet and fonts (`src/ui/theme.ts`), plate & cutting
   panel with the highlighted kerf field, drag-and-drop parts panel, stats summary, search bar, plate cards with dashed
   spacing envelopes, margin line and fill bar, mode switch. Uses the reference sample set (`SAMPLE_PARTS` in `src/lib.ts`).
+
+## 0.1.6
+
+- Single-file builds that work when opened straight from disk (`file://`): `dist/standalone/plate-nester.html` and
+  `dist/standalone/library-example.html` (`npm run build:standalone`, also part of `npm run build`). JS, CSS, fonts and
+  the nesting worker are inlined; the worker is a classic blob worker because browsers refuse module workers on
+  `file://` pages. No new dependencies (`vite-plugin-singlefile` was rejected: it pulls in `braces` with unpatched
+  GHSA-vfj7-8cjw-p6xm).
+- Source pages show a note explaining how to run them instead of rendering blank (#21).
+- Fonts limited to Latin + Latin Extended subsets.

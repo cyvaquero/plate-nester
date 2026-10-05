@@ -17,7 +17,8 @@ verified against WeCreat MakeIT 3.06 (macOS) for the WeCreat Vision Pro 45W and 
 ```bash
 npm install
 npm run dev          # http://localhost:5173
-npm run build        # static site in dist/
+npm run build        # static site in dist/ + single-file pages in dist/standalone/
+npm run build:standalone  # only the single-file pages (open them by double-click, no server needed)
 npm test             # Vitest unit tests
 npm run test:e2e     # Playwright (first time: npx playwright install chromium)
 npm run lint && npm run typecheck
@@ -25,9 +26,13 @@ npm run lint && npm run typecheck
 
 ## Use it as a library
 
-`src/lib.ts` is the public API. A working example page lives in [`examples/`](examples/index.html): run
-`npm run dev` and open <http://localhost:5173/examples/>, or `npm run build` and open `dist/examples/index.html`
-from any static host.
+`src/lib.ts` is the public API. A working example page lives in [`examples/`](examples/index.html). To see it:
+
+- `npm run build:standalone`, then double-click `dist/standalone/library-example.html` (works from disk, no server), or
+- `npm run dev` and open <http://localhost:5173/examples/>.
+
+The `.html` files in the source tree load TypeScript, so opening them directly from disk only shows a note
+explaining this. `dist/standalone/plate-nester.html` is the full app as one file, like the original reference apps.
 
 ```ts
 import { nest, downloadBlob, plateFilename } from "./src/lib";

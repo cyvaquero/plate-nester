@@ -1,5 +1,6 @@
 import type { DoneResponse, ErrorResponse, ProgressResponse, Request, Response, RunRequest } from "./protocol";
 import type { Layout } from "./types";
+import { createWorker } from "./worker-factory";
 
 export interface NestHandlers {
   onLayout(layout: Layout): void;
@@ -14,7 +15,7 @@ export class NestClient {
   private current = 0;
 
   constructor(private readonly h: NestHandlers) {
-    this.worker = new Worker(new URL("./worker.ts", import.meta.url), { type: "module" });
+    this.worker = createWorker();
     this.worker.onmessage = (e: MessageEvent<Response>) => {
       const m = e.data;
       if (m.id !== this.current) return;

@@ -534,3 +534,8 @@ footer {
   gap: 12px;
   flex-wrap: wrap;
 }
+
+/* shown only when a source page is opened without its scripts (e.g. from file://) */
+.source-only {
+  display: none;
+}

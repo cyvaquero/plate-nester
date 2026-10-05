@@ -1,12 +1,13 @@
 {
   "name": "plate-nester",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "private": true,
   "type": "module",
   "description": "Client-side SVG nesting for laser cutting: true-shape and bounding-box packing onto plates.",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && node scripts/build-standalone.mjs",
+    "build:standalone": "node scripts/build-standalone.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
