@@ -1,0 +1,19 @@
+# plate-nester .gitignore
+#
+
+## Local tool settings
+/.claude/settings.local.json
+
+## OSX
+.DS_Store
+
+## Editors
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+*~
+*.swp
+*.swo
+
+## Secrets
+.env
