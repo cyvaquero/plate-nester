@@ -18,8 +18,5 @@
 ## Secrets
 .env
 
-## Build & test output
-/dist
+## Leftovers from the earlier Node toolchain
 /node_modules
-/playwright-report
-/test-results

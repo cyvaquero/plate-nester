@@ -24,3 +24,13 @@ Fixes found by the parity fixtures (deviations from the reference, both bugs the
 - Parity tests: Vitest unit suite (path parser, arcs, hull, RDP, convex decomposition, NFP sliding contact, envelope,
   MaxRects, shape search, export) and Playwright suite (sample set + fixtures with transforms, skew, CSS classes, hidden
   groups, text, arcs, gradients; overlap/margin/unique-id invariants; flattened-vs-original pixel parity; determinism; UI).
+
+## 0.1.7
+
+- **Single-file app, no Node.** `plate-nester.html` is one HTML file with inline JavaScript, like the reference apps:
+  True shape / Bounding box mode switch, both reference engines, sample parts, normal browser downloads (replacing the
+  artifact-only `window.claude` downloads). Libraries load by script tag as in the references.
+- Keeps the two fixes from 0.1.2: hidden (`display:none`) shapes no longer shape the outline; original-markup parts
+  placed more than once get per-instance ids.
+- Removed the TypeScript/Vite/npm project (`src/`, `tests/`, configs, `package.json`). Test SVGs moved to `fixtures/`.
+  0.1.4–0.1.6 (library API, example page, standalone build) lived only in the closed PR #20.
