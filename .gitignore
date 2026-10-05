@@ -17,3 +17,9 @@
 
 ## Secrets
 .env
+
+## Build & test output
+/dist
+/node_modules
+/playwright-report
+/test-results
