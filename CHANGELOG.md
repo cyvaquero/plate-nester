@@ -24,3 +24,10 @@ Fixes found by the parity fixtures (deviations from the reference, both bugs the
 - Parity tests: Vitest unit suite (path parser, arcs, hull, RDP, convex decomposition, NFP sliding contact, envelope,
   MaxRects, shape search, export) and Playwright suite (sample set + fixtures with transforms, skew, CSS classes, hidden
   groups, text, arcs, gradients; overlap/margin/unique-id invariants; flattened-vs-original pixel parity; determinism; UI).
+
+## 0.1.4
+
+- Public library API `src/lib.ts` (`nest`, `loadParts`, `disposeParts`, export helpers): worker-backed, streaming,
+  abortable, deterministic with `seed` + `maxIterations`.
+- Standalone example page `examples/index.html` (built to `dist/examples/`), with Playwright coverage.
+- `toWire`/`toNestSettings` moved to `src/nest/wire.ts` and shared by the app and the library.

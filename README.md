@@ -23,6 +23,35 @@ npm run test:e2e     # Playwright (first time: npx playwright install chromium)
 npm run lint && npm run typecheck
 ```
 
+## Use it as a library
+
+`src/lib.ts` is the public API. A working example page lives in [`examples/`](examples/index.html): run
+`npm run dev` and open <http://localhost:5173/examples/>, or `npm run build` and open `dist/examples/index.html`
+from any static host.
+
+```ts
+import { nest, downloadBlob, plateFilename } from "./src/lib";
+
+const result = await nest([{ name: "star.svg", svg: starSource, qty: 4 }], {
+  mode: "shape", // or "bbox"
+  plateW: 300,
+  plateH: 300,
+  kerf: 0.1,
+  gap: 1,
+  margin: 3,
+  rotStep: 90, // all mm / degrees
+  budgetMs: 3000, // search time; stop early with `signal: abortController.signal`
+  onLayout: (r) => console.log(r.stats.plates, "plates so far"),
+});
+result
+  .plates()
+  .forEach((svg, i) => downloadBlob(new Blob([svg], { type: "image/svg+xml" }), plateFilename(i, result.stats.plates)));
+```
+
+`nest` parses on the main thread (it needs the DOM) and nests in a Web Worker. It resolves with the layout, stats
+(`plates`, `minPlates`, `placed`, `fill`), rejected inputs, `plates()` (export SVG strings) and `zip()`.
+Pass `seed` + `maxIterations` for deterministic results.
+
 ## Layout
 
 | Path                  | Purpose                                                                   |

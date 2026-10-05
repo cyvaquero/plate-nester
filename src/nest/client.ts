@@ -41,4 +41,10 @@ export class NestClient {
     this.current++;
     this.send({ type: "stop" });
   }
+
+  /** Terminate the worker. The client cannot be used afterwards. */
+  dispose(): void {
+    this.current++;
+    this.worker.terminate();
+  }
 }

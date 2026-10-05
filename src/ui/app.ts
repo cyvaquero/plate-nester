@@ -1,7 +1,8 @@
 import { downloadBlob, plateFilename, plateSVG, zipPlates } from "../export/plate";
 import { NestClient } from "../nest/client";
 import type { DoneResponse } from "../nest/protocol";
-import type { Layout, NestSettings, WirePart } from "../nest/types";
+import type { Layout } from "../nest/types";
+import { toNestSettings, toWire } from "../nest/wire";
 import { SAMPLES } from "../samples";
 import { parseSVG, rescalePart } from "../svg/parse";
 import type { Mode, Part, Settings } from "../types";
@@ -93,35 +94,13 @@ export function startApp(): void {
     client.run({
       mode: S.mode,
       parts: parts.map(toWire),
-      settings: nestSettings(),
+      settings: toNestSettings(S),
       geoVer,
       budgetMs: dbg.budgetMs ?? budgetMs,
       seed: dbg.seed,
       maxIterations: dbg.maxIterations,
     });
   }
-  const toWire = (p: Part): WirePart => ({
-    uid: p.uid,
-    name: p.name,
-    qty: p.qty,
-    lock: p.lock,
-    outers: p.outers,
-    areaMM: p.areaMM,
-    wMM: p.wMM,
-    hMM: p.hMM,
-    center: [p.cx, p.cy],
-    origin: [p.bbox.x, p.bbox.y],
-  });
-  const nestSettings = (): NestSettings => ({
-    plateW: S.plateW,
-    plateH: S.plateH,
-    kerf: S.kerf,
-    gap: S.gap,
-    margin: S.margin,
-    rotStep: S.rotStep,
-    prec: S.prec,
-    rotate90: S.rotate90,
-  });
   /** Re-run after a short pause (restarting cancels any run in flight). */
   function schedule(delay: number, rerender: boolean): void {
     clearTimeout(timer);
