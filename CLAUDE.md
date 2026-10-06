@@ -14,6 +14,7 @@ The SVG export format is verified in WeCreat MakeIT and must stay exactly as is.
   - major: only bumped when the user explicitly says so; zeroes minor and iterative.
   - minor: only bumped when the user explicitly says so; keeps major, zeroes iterative.
   - iterative: bump automatically with every change.
+  - pre-release suffix (e.g. `-beta`): only when the user explicitly says so.
 - All internal lengths are mm.
 - Sandboxed sessions may not be able to read `~/.gitconfig`: run git with `GIT_CONFIG_GLOBAL` set to a file holding only
   the gh credential helper. The commit identity lives in this clone's `.git/config` (GitHub no-reply address).

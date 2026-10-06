@@ -1,6 +1,32 @@
 # Changelog
 
-Format `major.minor.iterative`. Major/minor change only on request; the iterative number increments with every change.
+Format `major.minor.iterative`, with an optional pre-release suffix (`-beta`). Major/minor and suffixes change only
+on request; the iterative number increments with every change.
+
+## 1.0.0-beta
+
+First release (main previously held only the initial commit). Everything below 0.1.32, in short:
+
+- **Nesting:** SVG and DXF parts on sheets for laser, vinyl, CNC and plasma cutting.
+  - True-shape nesting (no-fit polygons, rotation steps, order search) and bounding-box packing.
+  - Quantities, rotation lock, kerf, gap and edge margin; multiple plates.
+- **Import:**
+  - SVG with transforms, CSS `<style>` resolved to attributes for MakeIT, and hidden shapes left out.
+  - Links to outside files are removed and a Content-Security-Policy is in place, so nothing outside the file is
+    ever loaded.
+  - DXF (ASCII, any version): lines, arcs, circles, ellipses, bulge polylines, splines and blocks, in the drawing's
+    units, model space only.
+- **Export:**
+  - SVG per plate or as a zip. Verified in WeCreat MakeIT 3.06.
+  - Or DXF R12 in mm, with true arcs and layers by colour or by source layer.
+  - Cut order with inner cuts first, rows of parts, and joined outlines.
+  - Output file prefix and optional plate outline.
+- **Optional kerf compensation:** outlines out and holes in by half the kerf, with safeguards against applying it
+  twice.
+- **Fixtures:** test files for every case, organised by topic, plus test-cut pieces (kerf test, finger joints, box
+  corner, slot gauge), all described in the README.
+- **Open:** compatibility QA in LightBurn, Bambu Suite, xTool Studio and Silhouette Studio (#49–#52), and the
+  Phase 2 enhancements.
 
 ## 0.1.32
 
