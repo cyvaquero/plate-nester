@@ -4,6 +4,11 @@ Format `major.minor.iterative`, with an optional pre-release suffix such as `-be
 only on request; the iterative number increments with every change. Once the suffix is dropped, it comes back only for
 a major rewrite of what the app does or how it works.
 
+## 1.2.22-beta
+
+- The mm / in buttons, the checkbox labels and the "Measure it from a test cut" and "Parts on this plate" toggles are at
+  least 24 px tall, the minimum target size in WCAG 2.2 (#177).
+
 ## 1.2.21-beta
 
 - The slashed "no holes" stand-in in the parts list is less faint: 3.6:1 against its background in the light theme and
